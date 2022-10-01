@@ -1,0 +1,18 @@
+p{
+    color: hsl(0, 0%, 30%);
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+.th-size{
+    width: 20% !important;
+}
+
+.checkout-location{
+    vertical-align: middle;
+}
+
+.btn-size{
+    width: 200px;
+    height: 40px;
+}

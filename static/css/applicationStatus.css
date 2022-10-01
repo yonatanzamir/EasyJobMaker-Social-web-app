@@ -1,0 +1,29 @@
+p{
+    color: hsl(0, 0%, 30%);
+    font-weight: 500;
+    line-height: 1.2;
+}
+
+span.abc {
+    display:  inline !important; /* the default for span */
+    width: 100px !important;
+    height: 100px !important;
+    padding: 5px !important;
+  }
+
+.jobTitle {
+    margin: 0px 50px 5px 80px;
+    font-weight: bold;
+}
+
+.th-size{
+    width: 20% !important;
+}
+
+.status-location {
+    vertical-align: middle;
+}
+
+th.status-location {
+    padding-left: 300px;
+}
