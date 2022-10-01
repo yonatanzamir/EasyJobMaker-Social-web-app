@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+{% extends 'EasyJobMakerApp/main.html' %}
+{% load static %}
+
+
+<html class="jobs_html" lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS only. first bootstrap and then our css!-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+
+    {% block region %}
+    <div class="dropdown btn-group">
+        <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          REGION
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <li> <a class="dropdown-item" href="#">All Regions</a></li> 
+         <li><a class="dropdown-item" href="#">Northern</a></li> 
+         <li> <a class="dropdown-item" href="#">Haifa</a></li> 
+        <li> <a class="dropdown-item" href="#">Tel Aviv</a></li> 
+        <li> <a class="dropdown-item" href="#">Southern</a></li> 
+        <li> <a class="dropdown-item" href="#">Central</a></li> 
+        <li>  <a class="dropdown-item" href="#">Jerusalem</a> </li> 
+        </div>
+    {% endblock region%}
+    {% block search %}
+    <form method="get" id="my-form" action="{% url 'search' %}">
+        <div class="flex">
+            <input type="text" name="query" class="p-2 bg-gray-100 border-0" placeholder="Search...">
+            <!-- <a href="https://www.flaticon.com/free-icons/search" title="search icons">Search icons created by Good Ware - Flaticon</a> -->
+            <input id="searchGoButton" style="width: 27px; position:relative; left:-40px; top:10px;" href="{% url 'search' %}" type="image" src="../../../static/images/search.png" alt="Search"></input>
+        </div>
+    </form>
+    {% endblock search%}
+    {% block content %}
+ 
+    <div class="row">
+        {% for job in jobs %}
+        {% if not job.in_progress and not job.complete %}
+        <div class="col-lg-4">
+            <img class="thumbnail" src="{{ job.imageURL }}">
+            <div class="box-element job">
+                <h6><strong>{{job.job_title}}</strong></h6>
+                <hr>
+                {%if job.customer.user == user%}
+                <a class="btn btn-outline-secondary add-btn disabled" data-toggle="tooltip" data-placment="top" title="You can't apply for your own job !" href="">Apply</a>
+                {%else%}
+                <a class="btn btn-outline-secondary add-btn" href="{% url 'checkout' job.id %}">Apply</a>
+                {%endif%}
+                <a class="btn btn-outline-success" href="{% url 'jobDetails' job.id %}">View</a>
+                <h4 style="display: inline-block; float: right"><strong>{{job.payment_for_job|floatformat:2}}$</strong>
+                </h4>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+    <script>
+        is_service_provider = "{{ is_service_provider}}"
+        $(document).ready(function () {
+                $('[data-toggle="tooltip"]').tooltip();
+            });
+        let buttons=document.getElementsByClassName('add-btn')
+        if (is_service_provider == "False") {
+        
+           for (let index = 0; index < buttons.length; index++) {
+            document.getElementsByClassName('add-btn')[index].classList.add('disabled')
+            document.getElementsByClassName('add-btn')[index].href = ""
+            document.getElementsByClassName('add-btn')[index].setAttribute("data-toggle", "tooltip")
+            document.getElementsByClassName('add-btn')[index].setAttribute("data-placement", "bottom")
+            document.getElementsByClassName('add-btn')[index].setAttribute("title", "You must be a service provider!")
+           }
+       
+        }
+
+        var userRegionSelection;
+    $('.dropdown-menu a').click(function(){    
+        userRegionSelection=$(this).text();
+        $('#dropdownMenuButton').text(userRegionSelection)
+        submitFormData($(this).text());
+     });
+
+
+
+
+function submitFormData(region) {
+  
+console.log('Form genrated....')
+
+
+var formData = new FormData()
+formData.append("Region", JSON.stringify({ 'region': region }))
+
+
+var url = "{% url 'filtered_jobs_by_region' %}"
+
+$.ajaxSetup({
+    headers: {
+        "X-CSRFToken": csrftoken
+    }
+});
+
+
+$.ajax({
+    type: 'POST',
+    url: url,
+    data: formData,
+    cache: false,
+    processData: false,
+    contentType: false,
+    enctype: 'multipart/form-data',
+    success: function (data) {
+        console.log('sucesss!')
+      //  $("html").html($("html",data).html());
+      var parser = new DOMParser();
+	var doc = parser.parseFromString(data, 'text/html');
+	
+      $(".row").html(doc.querySelectorAll(".row")[0].innerHTML );
+        //  window.location.href = "{% url 'jobs' %}"
+    },
+    error: function (jqXhr, textStatus, errorThrown) {
+        console.log("SHAIYONTAN!!")
+        console.log('ERROR')
+        console.log(jqXhr)
+    },
+})
+}
+
+    </script>
+
+    {% endblock content %}
+
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

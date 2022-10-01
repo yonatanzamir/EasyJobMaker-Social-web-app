@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+{% load static %}
+{% load mathfilters %}
+<html lang="en">
+
+<head>
+    <title>EasyJobMaker</title>
+    <!-- CSS only. first bootstrap and then our css!-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+        <link
+        href="https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css"
+        rel="stylesheet"
+      />
+      <link rel="stylesheet" type="text/css" href="{% static '/css/swiper-bundle.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/css/main.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/fonts/ionicons.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/css/footer-Dark.css' %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+
+    <script type="text/javascript">
+        var user = '{{request.user}}'
+
+        function getToken(name) {
+            var cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                var cookies = document.cookie.split(';');
+                for (var i = 0; i < cookies.length; i++) {
+                    var cookie = cookies[i].trim();
+                    // Does this cookie string begin with the name we want?
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        var csrftoken = getToken('csrftoken')
+    </script>
+    {% block othermeta %}
+    {% endblock othermeta%}
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="{% url 'main' %}">EasyJobMaker</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'jobs' %}">Jobs<span class="sr-only"></span></a>
+                </li>
+                {% if user.is_authenticated %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'jobBuilder' %}">Add a Job<span class="sr-only"></span></a>
+                </li>
+                {%endif%}
+                {% if user.is_authenticated %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'myJobs' %}">My Jobs<span class="sr-only"></span></a>
+                </li>
+                {%endif%}
+                {%if is_service_provider%}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'jobsToDo' %}"> Jobs To Do<span class="sr-only"></span></a>
+                </li>
+                {%endif%}
+                {% if user.is_authenticated %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'jobsApplications' %}"> Jobs Applications<span class="sr-only"></span></a>
+                </li>
+                {%endif%}
+                {% if user.is_authenticated and is_service_provider %}
+                <li class="nav-item active">
+                    <a class="nav-link" href="{% url 'applicationsStatus' %}"> My Applications<span class="sr-only"></span></a>
+                </li>
+                {%endif%}
+            </ul>
+            </ul>
+        </div>
+        {% block search %}
+        {% endblock search%}
+        {% block region %}
+        {% endblock region%}
+
+        <span class="hello-msg">Hello, {{request.user}}</span>
+
+        {% if user.is_authenticated %}
+        <div class="form-inline my-2 my-lg-0"></div>
+        <a class="my-account-color nav-link" href="{% url 'myProfile' %}">My Account<span class="sr-only"></span></a>
+        </div>
+        {% endif %}
+
+        {% if not user.is_authenticated %}
+        <div class="form-inline my-2 my-lg-0">
+            <a href="{% url 'loginPage' %}" class="btn btn-warning">Login</a>
+        </div>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+        <div class="form-inline my-2 my-lg-0 ">
+            <a href="{% url 'logout' %}" class="btn btn-warning">Logout</a>
+        </div>
+        {% endif %}
+
+        {% if not user.is_authenticated %}
+        <div class="form-inline my-2 my-lg-0 myregister">
+            <a href="{% url 'registerPage' %}" class="btn btn-warning">Register</a>
+        </div>
+        {% endif %}
+
+    </nav>
+    <div class="container">
+        <br>
+        {% block content %}
+        <div class="container-fluid py-5">
+            <h1 class="display-5 fw-bold">Easy Job Maker</h1>
+            <p class="col-md-8 fs-4">A social app that connects people who want a mission and people who want to do a
+                mission and earn for it. The app provides customer service as well as occasional work for couriers. The
+                service that the customer can receive is some kind of mission or general service. The app genre is
+                social - that is, the app serves as an intermediary between customers and couriers for the purpose of
+                providing informal / social services.</p><a class="btn btn-primary btn-lg" role="button"
+                href="{% url 'jobs' %}">start now!</a>
+
+
+                <section class="container review-section">
+                    <div class="testimonial mySwiper">
+                        <h1 id="spr">Service Providers Reviews</h1>
+                        
+                            <!-- <div class="label">{{best_review.service_provider.full_name}}</div> -->
+                       
+                      <div class="testi-content swiper-wrapper">
+
+                        {% for review in reviews %}
+                        
+                        <div class="slide swiper-slide">
+                
+
+
+                            <img class="image service_provider_img" src="{{ review.service_provider.customer.imageURL }}"  alt=""  />
+                            <div>
+                                <div class="service_provider_label" style="display: none">{{review.service_provider.full_name}} </div>
+                                {% if review.service_provider.reviews_counter > 0 %}
+                                {% with rate=review.service_provider.reviews_sum|div:review.service_provider.reviews_counter %}
+                                <div class="rating-star-navbar" style="display:none">
+                                    <span>
+                                        <i class="fa fa-star{% if rate >= 0.5 and rate < 1 %}-half-o{% elif rate < 1 %}-o {% endif %}"
+                                            aria-hidden="true"></i>
+                                        <i class="fa fa-star{% if rate >= 1.5 and rate < 2 %}-half-o{% elif rate < 2 %}-o {% endif %}"
+                                            aria-hidden="true"></i>
+                                        <i class="fa fa-star{% if rate >= 2.5 and rate < 3 %}-half-o{% elif rate < 3 %}-o {% endif %}"
+                                            aria-hidden="true"></i>
+                                        <i class="fa fa-star{% if rate >= 3.5 and rate < 4 %}-half-o{% elif rate < 4 %}-o {% endif %}"
+                                            aria-hidden="true"></i>
+                                        <i class="fa fa-star{% if rate >= 4.5 and rate < 5 %}-half-o{% elif rate < 5 %}-o {% endif %}"
+                                            aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                                {% endwith %}
+                                {%else%}
+                                <div class="rating-star-navbar" style="display:none">
+                                    <span>
+                                        <i class="fa fa-star-o" aria-hidden="true"></i>
+                                        <i class="fa fa-star-o" aria-hidden="true"></i>
+                                        <i class="fa fa-star-o" aria-hidden="true"></i>
+                                        <i class="fa fa-star-o" aria-hidden="true"></i>
+                                        <i class="fa fa-star-o" aria-hidden="true"></i>
+                                    </span>
+                                </div>
+                                {%endif%}
+                            </div>
+                       
+                            <p>
+                              {{review.review}}
+                            </p>
+                
+                            <i class="bx bxs-quote-alt-left quote-icon"></i>
+                
+                            <div class="details">
+                              <span class="name">{{review.customer.full_name}}</span>
+                              <span class="job">customer</span>
+                              <br>
+                       
+                            </div>
+                          </div>
+                       
+                    
+                        {%endfor%}
+                  
+                      </div>
+                      <div class="swiper-button-next nav-btn"></div>
+                      <div class="swiper-button-prev nav-btn"></div>
+                      <div class="swiper-pagination"></div>
+                    </div>
+                  </section>
+        </div>
+
+    </div>
+    <footer class="footer-dark">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-6 col-md-3 item">
+                    <h3>Services</h3>
+                    <ul>
+                        <li><a href="{% url 'main' %}">Home</a></li>
+                        {% if user.is_authenticated %}
+                        <li><a href="{% url 'jobBuilder' %}">Add Job</a></li>
+                        {% endif %}
+                        {%if is_service_provider%}
+                        <li><a href="{% url 'jobsToDo' %}">Job To Do</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                {% if user.is_authenticated %}
+                <div class="col-sm-6 col-md-3 item">
+                    <h3>About</h3>
+                    <ul>
+                        <li><a href="{% url 'myProfile' %}">Careers</a></li>
+                    </ul>
+                </div>
+                {% endif %}
+                <div id="EasyJobMakerDownSection" class="col-md-6 item text">
+                    <h3>Easy Job Maker</h3>
+                    <p class="text-right">אפליקציה חברתית שמקשרת בין אנשים שרוצים שליחות כלשהי לבין אנשים שרוצים לעשות
+                        שליחות ולהרוויח עבורה. האפליקציה מספקת שירות ללקוחות וכן עבודה מזדמנת לשליחים. השירות שהלקוח
+                        יכול לקבל הוא שליחות כלשהי או שירות כללי&nbsp;</p>
+                </div>
+                <div class="col item social"><a href="https://www.facebook.com/Easyjobmaker-101496685912252"><i
+                            class="icon ion-social-facebook"></i></a><a href="https://github.com/shaialaluf"><i
+                            class="icon ion-social-github"></i></a><a href="mailto:shaiyonatan@gmail.com"><i
+                            class="icon ion-email"></i></a><a
+                        href="https://www.google.com/search?q=easy+job+maker&oq=easy&aqs=chrome.3.69i60j69i57j35i39l2j69i60l4.4380j0j7&sourceid=chrome&ie=UTF-8"><i
+                            class="icon ion-social-google"></i></a><a href="https://github.com/yonatanzamir"><i
+                            class="icon ion-social-github"></i></a></div>
+            </div>
+            <p class="copyright">Easy Job Maker © 2022 </p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+    <script>
+
+        var swiper = new Swiper(".mySwiper", {
+          slidesPerView: 1,
+          grabCursor: true,
+          loop: true,
+          pagination: {
+            el: ".swiper-pagination",
+            clickable: true,
+          },
+          navigation: {
+            nextEl: ".swiper-button-next",
+            prevEl: ".swiper-button-prev",
+          },
+        });
+
+        </script>
+
+    {% endblock content %}
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+</body>
+
+<script>
+$("document").ready(function(){
+  $(".service_provider_img").hover(function(){
+    $(".rating-star-navbar").toggle();
+   $(".service_provider_label").toggle();
+ });
+ });
+</script>
+
+<script>
+        $(window).on( "load", function() {
+            if("{{ user }}" === "AnonymousUser"){
+                $('#EasyJobMakerDownSection').removeClass('col-md-6').addClass('col-md-9')
+            }   
+        })
+</script>
+
+
+</html>

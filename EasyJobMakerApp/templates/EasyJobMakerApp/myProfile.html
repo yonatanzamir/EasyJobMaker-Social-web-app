@@ -1,0 +1,384 @@
+{% extends 'EasyJobMakerApp/main.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+
+    <!-- CSS only. first bootstrap and then our css!-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Document</title>
+    {% block othermeta %}
+    <link rel="stylesheet" type="text/css" href="{% static '/css/myProfile.css' %}">
+    {% endblock othermeta%}
+</head>
+
+<body>
+    {% block content %}
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-lg-4 pb-5">
+                <!-- Account Sidebar-->
+                <div class="author-card pb-3">
+                    <div class="author-card-cover" style="background-image: url(../../../static/images/cover2.png);">
+
+                    </div>
+
+                    <div class="author-card-profile">
+
+
+                        <div class="author-card-avatar"><img src="{{ customer.imageURL }}">
+                        </div>
+
+
+                        <label for="image-profile">
+                            <img id="image-profile-img"
+                                src="https://img.icons8.com/fluency-systems-filled/25/000000/edit-user-female.png" />
+                            <input type="file" id="image-profile" style="display: none" name="image"
+                                accept="image/gif,image/jpeg,image/jpg,image/png" multiple=""
+                                data-original-title="upload photos">
+                        </label>
+                        <!-- <a href="">  
+                            <img src="https://img.icons8.com/fluency-systems-filled/25/000000/edit-user-female.png" />
+                        </a> -->
+
+                        <div class="author-card-details">
+
+                            <h5 class="author-card-name text-lg">{{customer.full_name}}</h5>
+
+                            {% if is_service_provider %}
+                            <span class="author-card-position">Service Provider
+                                {% if user.is_authenticated and is_service_provider %}
+                                <!-- <span class="rate-msg">Your rate:</span> -->
+                                    <div class="rating-star-navbar">
+                                        <span>
+                                            <i class="fa fa-star{% if rate >= 0.5 and rate < 1 %}-half-o{% elif rate < 1 %}-o {% endif %}"
+                                                aria-hidden="true"></i>
+                                            <i class="fa fa-star{% if rate >= 1.5 and rate < 2 %}-half-o{% elif rate < 2 %}-o {% endif %}"
+                                                aria-hidden="true"></i>
+                                            <i class="fa fa-star{% if rate >= 2.5 and rate < 3 %}-half-o{% elif rate < 3 %}-o {% endif %}"
+                                                aria-hidden="true"></i>
+                                            <i class="fa fa-star{% if rate >= 3.5 and rate < 4 %}-half-o{% elif rate < 4 %}-o {% endif %}"
+                                                aria-hidden="true"></i>
+                                            <i class="fa fa-star{% if rate >= 4.5 and rate < 5 %}-half-o{% elif rate < 5 %}-o {% endif %}"
+                                                aria-hidden="true"></i>
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                </span>
+
+                                {% endif %}
+                                </div>
+                             
+                           
+                        
+ 
+                        </div>
+                    </div>
+                
+                <div class="wizard">
+                    <nav class="list-group list-group-flush">
+                        <a class="list-group-item active" href="#"><i class="fe-icon-user text-muted"></i>Profile
+                            Settings</a>
+                        <a class="list-group-item" href="{% url 'myJobs' %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div><i class="fe-icon-shopping-bag mr-1 text-muted"></i>
+                                    <div class="d-inline-block font-weight-medium text-uppercase">My Jobs</div>
+                                </div><span class="badge badge-secondary">6</span>
+                            </div>
+                        </a>
+                        {% if is_service_provider %}
+                        <a class="list-group-item" href="{%url 'jobsToDo'%}"><i
+                                class="fe-icon-map-pin text-muted"></i>Jobs To Do</a>
+                        {% endif %}
+                        {% if is_service_provider %}
+                        <a class="list-group-item"  id = "reviews_button"><i
+                                class="fe-icon-map-pin text-muted"></i>Show Reviews</a>
+                        {% endif %}
+                    </nav>
+                </div>
+            </div>
+            <!-- Profile Settings-->
+            <div class="col-lg-8 pb-5">
+                <form class="row" id="ProfileForm">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="account-fn">First Name</label>
+                            <input class="form-control" type="text" id="account-fn" value="{{customer.user.first_name}}"
+                                required="" disabled="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="account-ln">Last Name</label>
+                            <input class="form-control" type="text" id="account-ln" value="{{customer.user.last_name}}"
+                                required="" disabled="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="account-email">E-mail Address</label>
+                            <input class="form-control" type="email" id="account-email" value="{{customer.email}}"
+                                disabled="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="account-pass">New Password</label>
+                            <input class="form-control" type="password" id="account-pass" disabled="">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="account-confirm-pass">Confirm Password</label>
+                            <input class="form-control" type="password" id="account-confirm-pass" disabled="">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <hr class="mt-2 mb-3">
+                        <div class="d-flex flex-wrap justify-content-between align-items-center">
+                            <div class="custom-control custom-checkbox d-block">
+                                {% if is_service_provider %}
+                                <input class="custom-control-input" type="checkbox" id="subscribe_me" checked>
+                                {% else %}
+                                <input class="custom-control-input" type="checkbox" id="subscribe_me">
+                                {% endif %}
+                                <label class="custom-control-label" for="subscribe_me">In Service Providers Team</label>
+                            </div>
+                            <button id="form-button" class="btn btn-style-1 btn-primary" type="submit" data-toast=""
+                                data-toast-position="topRight" data-toast-type="success"
+                                data-toast-icon="fe-icon-check-circle" data-toast-title="Success!"
+                                data-toast-message="Your profile updated successfuly.">Update Profile</button>
+                        </div>
+                    </div>
+
+                    <!------------------------------------------------------>
+                    {% if is_service_provider %}
+                    <div class="reviews_container"> 
+                        <div class="accordion" style="display: none;">
+                            <dl>
+                                {% for review in reviews %}
+                                <dt><a class="accordionTitle">{{review.job.job_title}}</a></dt>
+                                <dd class="accordionItem accordionItemCollapsed">
+                                    <article class="box mb-3">
+                                        <div class="icontext w-100">
+                                            <div class="text">
+                                                <!-- <div class="job_img"><img src="{{ review.job.imageURL }}"></div>
+                                            <h4 class="mb-1">{{review.job.job_title}}</h4> -->
+                                                <div class="reviwer_img"><img src="{{ review.customer.imageURL }}">
+                                                </div>
+                                                <h4 class="mb-1">{{review.customer.full_name}}</h4>
+                                                <div class="rating-star">
+                                                    <span>
+                                                        <i class="fa fa-star{% if review.rating == 0.5 %}-half-o{% elif review.rating < 1 %}-o {% endif %}"
+                                                            aria-hidden="true"></i>
+                                                        <i class="fa fa-star{% if review.rating == 1.5 %}-half-o{% elif review.rating < 2 %}-o {% endif %}"
+                                                            aria-hidden="true"></i>
+                                                        <i class="fa fa-star{% if review.rating == 2.5 %}-half-o{% elif review.rating < 3 %}-o {% endif %}"
+                                                            aria-hidden="true"></i>
+                                                        <i class="fa fa-star{% if review.rating == 3.5 %}-half-o{% elif review.rating < 4 %}-o {% endif %}"
+                                                            aria-hidden="true"></i>
+                                                        <i class="fa fa-star{% if review.rating == 4.5 %}-half-o{% elif review.rating < 5 %}-o {% endif %}"
+                                                            aria-hidden="true"></i>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-3">
+                                            <h5>{{review.subject}}</h5>
+                                            <p>
+                                                {{review.review}}
+                                            </p>
+                                        </div>
+                                    </article>
+                                </dd>
+                                {% endfor %}
+                            </dl>   
+                        </div>
+                    </div>
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+        document.getElementById('image-profile-img').setAttribute("data-toggle", "tooltip")
+        document.getElementById('image-profile-img').setAttribute("data-placement", "top")
+        document.getElementById('image-profile-img').setAttribute("title", "Change Profile Image!")
+
+
+        var form = document.getElementById('ProfileForm')
+
+        form.addEventListener('submit', function (e) {
+            e.preventDefault()
+            console.log('Form Submitted...')
+
+        })
+        document.getElementById('form-button').addEventListener('click', function (e) {
+            submitFormData()
+        })
+
+
+
+        function submitFormData() {
+            console.log('Form genrated....')
+
+            const imgInput = document.querySelector('#image-profile')
+            var formData = new FormData()
+            isServiceProvider = document.getElementById('subscribe_me').checked
+            console.log(isServiceProvider)
+            formData.append("ServiceProvider", JSON.stringify({ 'isServiceProvider': isServiceProvider }))
+            formData.append('image', imgInput.files[0])
+
+            var url = "{% url 'updateProfile' %}"
+
+            $.ajaxSetup({
+                headers: {
+                    "X-CSRFToken": csrftoken
+                }
+            });
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: formData,
+                cache: false,
+                processData: false,
+                contentType: false,
+                enctype: 'multipart/form-data',
+                success: function () {
+                    console.log('sucesss!')
+                    window.location.href = "{% url 'myProfile' %}"
+                },
+                error: function (jqXhr, textStatus, errorThrown) {
+                    console.log("SHAIYONTAN!!")
+                    console.log('ERROR')
+                    console.log(jqXhr)
+                },
+            })
+        }
+    </script>
+
+
+    <script>
+        $("#reviews_button").on('click', function () {
+            $(".accordion").toggle();
+            if($(".accordion").is(":hidden")){
+                $("#reviews_button").text("Show Reviews");
+            }
+            else{
+                $("#reviews_button").text("Hide Reviews");           
+            }    
+        });
+
+
+        (function (window) {
+            'use strict';
+            function classReg(className) {
+                return new RegExp("(^|\\s+)" + className + "(\\s+|$)");
+            }
+            var hasClass, addClass, removeClass;
+
+            if ('classList' in document.documentElement) {
+                hasClass = function (elem, c) {
+                    return elem.classList.contains(c);
+                };
+                addClass = function (elem, c) {
+                    elem.classList.add(c);
+                };
+                removeClass = function (elem, c) {
+                    elem.classList.remove(c);
+                };
+            }
+            else {
+                hasClass = function (elem, c) {
+                    return classReg(c).test(elem.className);
+                };
+                addClass = function (elem, c) {
+                    if (!hasClass(elem, c)) {
+                        elem.className = elem.className + ' ' + c;
+                    }
+                };
+                removeClass = function (elem, c) {
+                    elem.className = elem.className.replace(classReg(c), ' ');
+                };
+            }
+
+            function toggleClass(elem, c) {
+                var fn = hasClass(elem, c) ? removeClass : addClass;
+                fn(elem, c);
+            }
+            var classie = {
+                hasClass: hasClass,
+                addClass: addClass,
+                removeClass: removeClass,
+                toggleClass: toggleClass,
+                has: hasClass,
+                add: addClass,
+                remove: removeClass,
+                toggle: toggleClass
+            };
+            if (typeof define === 'function' && define.amd) {
+                define(classie);
+            } else {
+                window.classie = classie;
+            }
+        })(window);
+        var $ = function (selector) {
+            return document.querySelector(selector);
+        }
+        var accordion = $('.accordion');
+        accordion.addEventListener("click", function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            if (e.target && e.target.nodeName == "A") {
+                var classes = e.target.className.split(" ");
+                if (classes) {
+                    for (var x = 0; x < classes.length; x++) {
+                        if (classes[x] == "accordionTitle") {
+                            var title = e.target;
+                            var content = e.target.parentNode.nextElementSibling;
+                            classie.toggle(title, 'accordionTitleActive');
+                            if (classie.has(content, 'accordionItemCollapsed')) {
+                                if (classie.has(content, 'animateOut')) {
+                                    classie.remove(content, 'animateOut');
+                                }
+                                classie.add(content, 'animateIn');
+                            } else {
+                                classie.remove(content, 'animateIn');
+                                classie.add(content, 'animateOut');
+                            }
+                            classie.toggle(content, 'accordionItemCollapsed');
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+
+    {% endblock %}
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

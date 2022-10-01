@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+{% extends 'EasyJobMakerApp/main.html' %}
+{% load static %}
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static '/css/main.css' %}">
+    <!-- CSS only. first bootstrap and then our css!-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Document</title>
+</head>
+
+<body>
+    {% block content %}
+    <div class="row">
+        <div class="box-element" id="form-wrapper">
+            <form id="form" enctype="multipart/form-data">
+                <section>
+                    <p>User details:</p>
+                    <hr>
+
+                    <div id="user-info">
+                        <div class="form-field">
+                            <input required class="form-control" type="text" name="name" placeholder="Name..">
+                        </div>
+                        <div class="form-field">
+                            <input required class="form-control" type="text" name="phone" placeholder="Phone..">
+                        </div>
+                    </div>
+                </section>
+                <section>
+
+                    <hr>
+                    <p>Job details:</p>
+                    <hr>
+
+                    <div id="job-info">
+                        <div class="form-field">
+                            <input required class="form-control" type="text" name="job_title" placeholder="Job title..">
+                        </div>
+                        <div class="form-field">
+                            <input required class="form-control job-payment" id="job-payment" type="text" name="job_payment" placeholder="Job payment..">
+                        </div>
+                        <br>
+                        <div class="form-field">
+                            <p>Job description:</p>
+
+                            <textarea required class="form-control job-desc" style="resize: none; max-width: 4  00PX;" name="job_description"> </textarea>
+                        </div>
+                        <br>
+                       <div class="form-field">
+                            <label>Select image:</label>
+                            <input type="file" id="image" class="form-control-file">
+                       </div>
+
+                    </div>
+                </section>
+                <section>
+                    <div id="shipping-info">
+                        <hr>
+                        <p>Job Location Information:</p>
+                        <hr>
+                        <div class="form-field">
+                            
+                            
+                            <input class="form-control"  name="city" placeholder="City.." type="text" list="city" />
+                            <datalist id="city">
+                                {% for entry in jobsLocations %}
+                                    <option>{{ entry.city }}</option>
+                                {% endfor %}
+                                </datalist >
+                              
+                                
+
+
+                        </div>
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="address" placeholder="Address..">
+                        </div>
+                  
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="state" placeholder="State..">
+                        </div>
+                        <div class="form-field">
+                            <input class="form-control" type="text" name="zipcode" placeholder="Zip code..">
+                        </div>
+                    </div>
+                </section>
+                <hr>
+                <input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue !">
+
+
+
+
+
+                <br>
+                <br>
+                <div class="box-element hidden" id="payment-info">
+                    <small>Paypal Options</small>
+                    <!--<button id="make-payment">Make payment</button>-->
+                    <div id="paypal-button-container"></div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <script src="https://www.paypal.com/sdk/js?client-id=test&currency=USD"></script>
+
+    <script>
+        // Render the PayPal button into #paypal-button-container
+        paypal.Buttons({
+
+            // Set up the transaction
+            
+            createOrder: function(data, actions) {
+                payment = document.getElementById('job-payment').value
+                if(payment){
+                return actions.order.create({
+                    purchase_units: [{
+                        amount: {
+                            value: document.getElementById('job-payment').value 
+                        }
+                    }]
+                });
+            }
+            else{
+                alert('You must fill job payment textbox!');
+            }
+            },
+
+            // Finalize the transaction
+            onApprove: function(data, actions) {
+                return actions.order.capture().then(function(orderData) {
+                    // Successful capture! For demo purposes:
+                    console.log('Capture result', orderData, JSON.stringify(orderData, null, 2));
+                    var transaction = orderData.purchase_units[0].payments.captures[0];
+                    alert('Transaction '+ transaction.status + ': ' + transaction.id + '\n\nSee console for all available details');
+                    submitFormData()
+                    // Replace the above to show a success message within this page, e.g.
+                    // const element = document.getElementById('paypal-button-container');
+                    // element.innerHTML = '';
+                    // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+                    // Or go to another URL:  actions.redirect('thank_you.html');
+                });
+            }
+
+
+        }).render('#paypal-button-container');
+    </script>
+
+	<script type="text/javascript">
+
+	    var form = document.getElementById('form')
+
+		form.addEventListener('submit', function(e){
+	    	e.preventDefault()
+	    	console.log('Form Submitted...')
+      
+	    })
+        document.getElementById('form-button').addEventListener('click', function(e){
+	    	document.getElementById('payment-info').classList.remove("hidden");
+	    })
+
+
+	    function submitFormData(){
+	    	console.log('Form genrated....')
+
+	    	var userFormData = {
+				'name':null,
+				'phone':null,
+			}
+
+            var jobDetails = {
+				'jobTitle':null,
+				'jobDescription':null,
+                'jobImg':null,
+                'jobPayment':null
+			}
+
+
+			var shippingInfo = {
+				'address':null,
+				'city':null,
+				'state':null,
+				'zipcode':null,
+			}
+            userFormData.name = form.name.value
+	    	userFormData.phone = form.phone.value
+
+            jobDetails.jobTitle=form.job_title.value
+            jobDetails.jobDescription=form.job_description.value  
+            jobDetails.jobPayment=form.job_payment.value
+		
+	    	shippingInfo.address = form.address.value
+		    shippingInfo.city = form.city.value
+		    shippingInfo.state = form.state.value
+		    shippingInfo.zipcode = form.zipcode.value
+
+	    	console.log('user Form Data:', userFormData)
+            console.log('job Details:', jobDetails)
+            console.log('Shipping Info:', shippingInfo)
+
+            const imgInput = document.querySelector('#image')
+            var formData = new FormData()
+            formData.append("userFormData",  JSON.stringify({'userData':userFormData}))
+            formData.append("jobDetails", JSON.stringify({'jobDetails':jobDetails}))
+            formData.append("shippingInfo", JSON.stringify({'shipping':shippingInfo}))
+            formData.append('image', imgInput.files[0])
+
+	    	var url = "{% url 'addJob' %}"
+
+        $.ajaxSetup({
+            headers: {
+                "X-CSRFToken": csrftoken
+            }
+        });
+            $.ajax({
+              type: 'POST',
+              url: url,
+              data: formData,
+              cache: false,
+              processData: false,
+              contentType: false,
+              enctype: 'multipart/form-data',
+              success: function (){
+                  console.log('sucesss!')
+                  window.location.href = "{% url 'jobs' %}"
+              },
+                error: function(jqXhr, textStatus, errorThrown) {
+                console.log("SHAIYONTAN!!")
+                console.log('ERROR')
+                console.log(jqXhr)
+            },
+          })
+
+	    }
+	</script>
+    {% endblock content %}
+
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+
+</body>
+
+</html>

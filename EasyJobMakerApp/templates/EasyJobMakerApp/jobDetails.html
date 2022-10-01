@@ -1,0 +1,49 @@
+
+{% extends 'EasyJobMakerApp/main.html' %}
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS only. first bootstrap and then our css!-->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <title>Document</title>
+    {% block othermeta %}
+        <link rel="stylesheet" type="text/css" href="{% static '/css/jobDetails.css' %}">
+    {% endblock othermeta%}
+</head>
+<body>
+
+    {% block content %}
+         
+                <h1 class="my-4">{{job.job_title}}<br /></h1>
+                <div class="row">
+                    <div class="col-md-8"><img class="img-fluid img-view" src="{{ job.imageURL }}" alt="Alt Text" /><br><br></div>
+                    <div class="col-md-4 ">
+                        <h3 class="my-3">Job Description</h3>
+                        <p>{{ job.job_description }}</p>
+                        <h3 class="my-3">Job Details</h3>
+                        <ul class="list-unstyled">
+                            <li>Payment for job: {{job.payment_for_job}}$</li>
+                            <li>Contact name: {{job.contact_name}}</li>
+                            <li>Contact phone: {{job.contact_phone}}</li>
+                            <li>Date added: {{job.date_added}}</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card row">
+                    <h3 class="my-3">Job Address</h3>
+                    <div class="col-sm-6 col-md-4 mb-4" >State: {{jobAddress.state}}</div>
+                    <div class="col-sm-6 col-md-4 mb-4">City: {{jobAddress.city}}</div>
+                    <div class="col-sm-6 col-md-4 mb-4">Street: {{jobAddress.address}}</div>
+                   
+                </div>
+    
+    <br><br>
+{% endblock %}
+</body>
